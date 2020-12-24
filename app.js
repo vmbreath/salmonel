@@ -8,15 +8,20 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(logger('dev'));
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use(cookieParser());
+// app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/', indexRouter);
+// app.use('/users', usersRouter);
 
-app.listen(process.env.PORT || 3000)
+app.get("", (request, response) => {
+    response.send("Hello world")
+})
+
+let port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`app started on port ${port}`))
 
 module.exports = app;
