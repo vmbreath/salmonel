@@ -30,6 +30,8 @@ pool.query(`CREATE TABLE if not exists salmonel (
     pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
         if (err) throw err;
 
+        console.log('SELECT count(*) as count FROM salmonel: ', res.rows)
+
         if (res.rows[0].count === 0) {
             const sql = `INSERT INTO salmonel (serovar, o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4);`;
             const insertRow = (data, row, index) => {
@@ -64,7 +66,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/users', usersRouter);
 
 app.get("/test", (request, response) => {
-    pool.query('SELECT * as count FROM salmonel;', (err, res) => {
+    pool.query('SELECT * FROM salmonel;', (err, res) => {
         if (err) throw err;
         response.send(JSON.stringify(res.rows))
     });
