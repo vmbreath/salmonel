@@ -18,41 +18,45 @@ const pool = new Pool({
 });
 
 
-pool.query(`CREATE TABLE if not exists salmonel
-                 (
+pool.query(`CREATE TABLE if not exists salmonel (
                      serovar    TEXT NOT NULL,
                      o_antigen  TEXT NOT NULL,
                      h_antigen1 TEXT NOT NULL,
                      h_antigen2 TEXT NOT NULL
-                 );`)
-
-pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
+                 );`, (err, res) => {
     if (err) throw err;
 
-    if (res.rows[0].count === 0) {
-        const sql = `INSERT INTO salmonel (serovar, o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4);`;
-        const insertRow = (data, row, index) => {
-            console.log('insertRow ', row);
-            pool.query(sql, row, (err, res) => {
-                if (err) {
-                    return console.log(err.message);
-                }
-                if (data[index + 1] !== undefined) {
-                    insertRow(data, data[index + 1], index + 1);
-                } else {
-                    pool.end();
-                }
-            })
-        };
-
-        let rawdata = fs.readFileSync('Data.js');
-        let Data = JSON.parse(rawdata);
-        insertRow(Data,Data[0],0);
-
-    }
-
     pool.end();
+
+    pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
+        if (err) throw err;
+
+        if (res.rows[0].count === 0) {
+            const sql = `INSERT INTO salmonel (serovar, o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4);`;
+            const insertRow = (data, row, index) => {
+                console.log('insertRow ', row);
+                pool.query(sql, row, (err, res) => {
+                    if (err) {
+                        return console.log(err.message);
+                    }
+                    if (data[index + 1] !== undefined) {
+                        insertRow(data, data[index + 1], index + 1);
+                    } else {
+                        pool.end();
+                    }
+                })
+            };
+
+            let rawdata = fs.readFileSync('Data.js');
+            let Data = JSON.parse(rawdata);
+            insertRow(Data, Data[0], 0);
+
+        }
+
+        pool.end();
+    });
 });
+
 
 
 // app.use(logger('dev'));
