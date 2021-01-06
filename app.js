@@ -26,7 +26,6 @@ pool.query(`CREATE TABLE if not exists salmonel (
                  );`, (err, res) => {
     if (err) throw err;
 
-    pool.end();
 
     pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
         if (err) throw err;
@@ -41,8 +40,6 @@ pool.query(`CREATE TABLE if not exists salmonel (
                     }
                     if (data[index + 1] !== undefined) {
                         insertRow(data, data[index + 1], index + 1);
-                    } else {
-                        pool.end();
                     }
                 })
             };
@@ -52,8 +49,6 @@ pool.query(`CREATE TABLE if not exists salmonel (
             insertRow(Data, Data[0], 0);
 
         }
-
-        pool.end();
     });
 });
 
@@ -71,7 +66,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get("/test", (request, response) => {
     pool.query('SELECT * as count FROM salmonel;', (err, res) => {
         if (err) throw err;
-        pool.end();
         response.send(JSON.stringify(res.rows))
     });
 })
