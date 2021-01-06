@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const {Pool, Client} = require('pg');
+const {Pool} = require('pg');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
@@ -18,7 +18,7 @@ const pool = new Pool({
 });
 
 
-pool.executeSql(`CREATE TABLE if not exists salmonel
+pool.query(`CREATE TABLE if not exists salmonel
                  (
                      serovar    TEXT NOT NULL,
                      o_antigen  TEXT NOT NULL,
@@ -30,15 +30,10 @@ pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
     if (err) throw err;
 
     if (res.rows[0].count === 0) {
-        const sql = `INSERT INTO salmonel (serovar, o_antigen,h_antigen1,h_antigen2) VALUES ($serovar,$o_antigen,$h_antigen1,$h_antigen2);`;
+        const sql = `INSERT INTO salmonel (serovar, o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4);`;
         const insertRow = (data, row, index) => {
             console.log('insertRow ', row);
-            pool.executeSql(sql, {
-                $serovar: row[0],
-                $o_antigen: row[1],
-                $h_antigen1: row[2],
-                $h_antigen2: row[3]
-            }, (err, res) => {
+            pool.query(sql, row, (err, res) => {
                 if (err) {
                     return console.log(err.message);
                 }
