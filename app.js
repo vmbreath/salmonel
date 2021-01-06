@@ -32,7 +32,7 @@ pool.query(`CREATE TABLE if not exists salmonel (
 
         console.log('SELECT count(*) as count FROM salmonel: ', res.rows)
 
-        if (res.rows[0].count === 0) {
+        if (res.rows[0].count == '0') {
             const sql = `INSERT INTO salmonel (serovar, o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4);`;
             const insertRow = (data, row, index) => {
                 console.log('insertRow ', row);
