@@ -74,7 +74,7 @@ app.get("/test", (request, response) => {
 })
 
 app.get("/salmonel", (request, response) => {
-    pool.query(`select * from salmonel WHERE ${request.query.filter} LIKE % || serovar || % limit 10;`, (err, res) => {
+    pool.query(`select * from salmonel WHERE \'${request.query.filter}\' LIKE \'%\' || serovar || \'%\' limit 10;`, (err, res) => {
         if (err) throw err;
         console.log(request.query.filter)
         response.send(JSON.stringify(res.rows))
