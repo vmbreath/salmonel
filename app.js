@@ -2,6 +2,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const {Pool} = require('pg');
+var cors = require('cors');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
@@ -9,7 +10,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 var app = express();
-
+app.use(cors());
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
