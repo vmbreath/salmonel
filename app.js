@@ -46,7 +46,6 @@ pool.query(`CREATE TABLE if not exists salmonel (
                     }
                 })
             };
-
             let rawdata = fs.readFileSync('Data.js');
             let Data = JSON.parse(rawdata);
             insertRow(Data, Data[0], 0);
