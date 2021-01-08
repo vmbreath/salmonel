@@ -74,9 +74,18 @@ app.get("/test", (request, response) => {
 })
 
 app.get("/salmonel", (request, response) => {
-    pool.query(`select * from salmonel WHERE serovar LIKE '%${request.query.filter}%' limit 10;`, (err, res) => {
+    // const sql = `INSERT INTO salmonel (serovar, o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4);`;
+    // pool.query(sql, request.query.filter, (err, res) => {
+    //     if (err) {
+    //         return console.log(err.message);
+    //     }
+    //     console.log('RESULT',res)
+    // })
+    const serovar = response.query.filter;
+    //pool.query(`select * from salmonel WHERE serovar LIKE '%${request.query.filter}%' limit 10;`,(err, res) => {
+    pool.query(`select * from salmonel WHERE serovar = $1 limit 10;`,[serovar],(err, res) => {
         if (err) throw err;
-        console.log(request.query.filter)
+        console.log(JSON.stringify(res.rows))
         response.send(JSON.stringify(res.rows))
     });
 })
