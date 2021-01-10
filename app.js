@@ -85,7 +85,7 @@ app.get("/filter", (request, response) => {
     const o_antigen = JSON.parse(request.query.filter);
     console.log(o_antigen,o_antigen.find.OAntigen[0]);
     const query = {
-        text: 'SELECT * from salmonel $2::text as o_antigen',
+        text: 'SELECT * FROM salmonel WHERE o_antigen = $1',
         values: ['15!'],
     }
     pool.query(query,(err, res) => {
