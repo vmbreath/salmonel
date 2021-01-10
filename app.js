@@ -81,6 +81,14 @@ app.get("/salmonel", (request, response) => {
         response.send(JSON.stringify(res.rows))
     });
 })
-
+app.get("/filter", (request, response) => {
+    const filter = `%${request.query.filter}%`;
+    console.log(filter);
+    // pool.query(`select * from salmonel WHERE o_antigen LIKE $2;`,[filter],(err, res) => {
+    //     if (err) throw err;
+    //     console.log(JSON.stringify(res.rows))
+    //     response.send(JSON.stringify(res.rows))
+    // });
+})
 
 module.exports = app;
