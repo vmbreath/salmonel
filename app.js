@@ -89,12 +89,50 @@ app.get("/salmonel", (request, response) => {
 })
 app.get("/filter", (request, response) => {
     const filter = JSON.parse(request.query.filter);
-    console.log(filter,filter.find.OAntigen[0]);
+    // console.log(filter,filter.find.OAntigen[0]);
+    // find:{
+    //     OAntigen:['15!'],
+    //         H1Antigen:[],
+    //         H2Antigen:[],
+    // },
+    // exclude:{
+    //     OAntigen:[],
+    //         H1Antigen:[],
+    //         H2Antigen:[],
+    // }
+
+    let sql = 'SELECT * FROM salmonel WHERE 1=1 '
+    let args= [];
+    filter.find.OAntigen.forEach(it=>{
+        args.push(it)
+        sql+= ` and (o_antigen ? \$${args.length})`
+    })
+    filter.find.H1Antigen.forEach(it=>{
+        args.push(it)
+        sql+= ` and (h_antigen1 ? \$${args.length})`
+    })
+    filter.find.H2Antigen.forEach(it=>{
+        args.push(it)
+        sql+= ` and (h_antigen2 ? \$${args.length})`
+    })
+    filter.exclude.OAntigen.forEach(it=>{
+        args.push(it)
+        sql+= ` and not (o_antigen ? \$${args.length})`
+    })
+    filter.exclude.H1Antigen.forEach(it=>{
+        args.push(it)
+        sql+= ` and not (h_antigen1 ? \$${args.length})`
+    })
+    filter.exclude.H2Antigen.forEach(it=>{
+        args.push(it)
+        sql+= ` and not (h_antigen2 ? \$${args.length})`
+    })
+console.log(sql,args)
     const query = {
-        text: 'SELECT * FROM salmonel WHERE h_antigen1 = $1',
+        text: sql,
         values: [filter.find.H1Antigen[0]],
     }
-    pool.query(query,(err, res) => {
+    pool.query(sql,args,(err, res) => {
         if (err) throw err;
         console.log(JSON.stringify(res.rows))
         response.send(JSON.stringify(res.rows))
