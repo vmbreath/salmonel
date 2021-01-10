@@ -86,7 +86,7 @@ app.get("/filter", (request, response) => {
     console.log(o_antigen,o_antigen.find.OAntigen[0]);
     const query = {
         text: 'SELECT * FROM salmonel WHERE o_antigen = $1',
-        values: ['15'],
+        values: [o_antigen.find.OAntigen[0]],
     }
     pool.query(query,(err, res) => {
         if (err) throw err;
