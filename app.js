@@ -20,10 +20,11 @@ const pool = new Pool({
 
 
 pool.query(`CREATE TABLE if not exists salmonel (
+                     id         serial primary key,
                      serovar    TEXT NOT NULL,
-                     o_antigen  TEXT NOT NULL,
-                     h_antigen1 TEXT NOT NULL,
-                     h_antigen2 TEXT NOT NULL
+                     o_antigen  jsonb NOT NULL,
+                     h_antigen1 jsonb NOT NULL,
+                     h_antigen2 jsonb NOT NULL
                  );`, (err, res) => {
     if (err) throw err;
 
@@ -37,7 +38,12 @@ pool.query(`CREATE TABLE if not exists salmonel (
             const sql = `INSERT INTO salmonel (serovar,o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4);`;
             const insertRow = (data, row, index) => {
                 console.log('insertRow ', row);
-                pool.query(sql, row, (err, res) => {
+                pool.query(sql, [
+                    row[0],
+                    JSON.stringify(row[1]),
+                    JSON.stringify(row[2]),
+                    JSON.stringify(row[3]),
+                ], (err, res) => {
                     if (err) {
                         return console.log(err.message);
                     }
@@ -82,11 +88,11 @@ app.get("/salmonel", (request, response) => {
     });
 })
 app.get("/filter", (request, response) => {
-    const o_antigen = JSON.parse(request.query.filter);
-    console.log(o_antigen,o_antigen.find.OAntigen[0]);
+    const filter = JSON.parse(request.query.filter);
+    console.log(filter,filter.find.OAntigen[0]);
     const query = {
         text: 'SELECT * FROM salmonel WHERE h_antigen1 = $1',
-        values: [o_antigen.find.H1Antigen[0]],
+        values: [filter.find.H1Antigen[0]],
     }
     pool.query(query,(err, res) => {
         if (err) throw err;
