@@ -82,13 +82,13 @@ app.get("/salmonel", (request, response) => {
     });
 })
 app.get("/filter", (request, response) => {
-    const filter = JSON.parse(request.query.filter);
-    console.log(filter,filter.find.OAntigen[0]);
-    // pool.query(`select * from salmonel WHERE o_antigen LIKE $2;`,['15!'],(err, res) => {
-    //     if (err) throw err;
-    //     console.log(JSON.stringify(res.rows))
-    //     response.send(JSON.stringify(res.rows))
-    // });
+    const o_antigen = JSON.parse(request.query.filter);
+    console.log(o_antigen,o_antigen.find.OAntigen[0]);
+    pool.query(`select * from salmonel WHERE o_antigen LIKE $2;`,['15!'],(err, res) => {
+        if (err) throw err;
+        console.log(JSON.stringify(res.rows))
+        response.send(JSON.stringify(res.rows))
+    });
 })
 
 module.exports = app;
