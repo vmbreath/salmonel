@@ -82,7 +82,7 @@ app.get("/salmonel", (request, response) => {
     });
 })
 app.get("/filter", (request, response) => {
-    const filter = request.query.filter;
+    const filter = JSON.parse(request.query.filter);
     console.log(filter,filter.find);
     // pool.query(`select * from salmonel WHERE o_antigen LIKE $2;`,['15!'],(err, res) => {
     //     if (err) throw err;
