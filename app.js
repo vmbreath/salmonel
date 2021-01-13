@@ -80,7 +80,7 @@ app.get("/test", (request, response) => {
 
 app.get("/salmonel", (request, response) => {
     const serovar = `%${request.query.filter}%`;
-    console.log(serovar);
+    console.log('Serovar ',serovar);
     pool.query(`select * from salmonel WHERE serovar LIKE $1 limit 10;`,[serovar],(err, res) => {
         if (err) throw err;
         console.log(JSON.stringify(res.rows))
