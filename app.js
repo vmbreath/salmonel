@@ -21,7 +21,7 @@ const pool = new Pool({
 
 pool.query(`CREATE TABLE if not exists salmonel (
                      id         serial primary key,
-                     group      TEXT NOT NULL,
+                     group1      TEXT NOT NULL,
                      serovar    TEXT NOT NULL,
                      o_antigen  jsonb NOT NULL,
                      h_antigen1 jsonb NOT NULL,
@@ -36,7 +36,7 @@ pool.query(`CREATE TABLE if not exists salmonel (
         console.log('SELECT count(*) as count FROM salmonel: ', res.rows)
 
         if (res.rows[0].count == '0') {
-            const sql = `INSERT INTO salmonel (group,serovar,o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4,$5);`;
+            const sql = `INSERT INTO salmonel (group1,serovar,o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4,$5);`;
             const insertRow = (data, row, index) => {
                 console.log('insertRow ', row);
                 pool.query(sql, [
