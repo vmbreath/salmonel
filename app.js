@@ -107,15 +107,21 @@ app.get("/filter", (request, response) => {
     let args= [];
     filter.find.OAntigen.forEach(it=>{
         args.push(it)
-        sql+= ` and (o_antigen ? \$${args.length})`
+        sql+= ` and ((o_antigen ? \$${args.length})`
+        args.push('['+it+']')
+        sql+= ` or (o_antigen ? \$${args.length}))`
     })
     filter.find.H1Antigen.forEach(it=>{
         args.push(it)
-        sql+= ` and (h_antigen1 ? \$${args.length})`
+        sql+= ` and ((h_antigen1 ? \$${args.length})`
+        args.push('['+it+']')
+        sql+= ` or (h_antigen1 ? \$${args.length}))`
     })
     filter.find.H2Antigen.forEach(it=>{
         args.push(it)
-        sql+= ` and (h_antigen2 ? \$${args.length})`
+        sql+= ` and ((h_antigen2 ? \$${args.length})`
+        args.push('['+it+']')
+        sql+= ` or (h_antigen2 ? \$${args.length}))`
     })
     filter.exclude.OAntigen.forEach(it=>{
         args.push(it)
@@ -129,12 +135,8 @@ app.get("/filter", (request, response) => {
         args.push(it)
         sql+= ` and not (h_antigen2 ? \$${args.length})`
     })
-console.log(sql,args)
-    const query = {
-        text: sql,
-        values: [filter.find.H1Antigen[0]],
-    }
-    pool.query(sql,args,(err, res) => {
+    console.log(sql, args)
+    pool.query(sql, args, (err, res) => {
         if (err) throw err;
         console.log(JSON.stringify(res.rows))
         response.send(JSON.stringify(res.rows))
