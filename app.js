@@ -106,19 +106,19 @@ app.get("/filter", (request, response) => {
     let sql = 'SELECT * FROM salmonel WHERE 1=1 '
     let args= [];
     filter.find.OAntigen.forEach(it=>{
-        args.push(it)
+        args.push('%'+'"'+it+'"'+'%')
         sql+= ` and ((o_antigen ? \$${args.length})`
         args.push('['+it+']')
         sql+= ` or (o_antigen ? \$${args.length}))`
     })
     filter.find.H1Antigen.forEach(it=>{
-        args.push(it)
+        args.push('%'+'"'+it+'"'+'%')
         sql+= ` and ((h_antigen1 ? \$${args.length})`
         args.push('['+it+']')
         sql+= ` or (h_antigen1 ? \$${args.length}))`
     })
     filter.find.H2Antigen.forEach(it=>{
-        args.push(it)
+        args.push('%'+'"'+it+'"'+'%')
         sql+= ` and ((h_antigen2 ? \$${args.length})`
         args.push('['+it+']')
         sql+= ` or (h_antigen2 ? \$${args.length}))`
