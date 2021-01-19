@@ -19,16 +19,34 @@ const pool = new Pool({
 });
 
 
-pool.query(`CREATE TABLE if not exists salmonel (
-                     id         serial primary key,
-                     allgroups      TEXT NOT NULL,
-                     serovar    TEXT NOT NULL,
-                     o_antigen  jsonb NOT NULL,
-                     h_antigen1 jsonb NOT NULL,
-                     h_antigen2 jsonb NOT NULL
-                 );`, (err, res) => {
+pool.query(`CREATE TABLE if not exists salmonel
+            (
+                id
+                serial
+                primary
+                key,
+                allgroups
+                TEXT
+                NOT
+                NULL,
+                serovar
+                TEXT
+                NOT
+                NULL,
+                o_antigen
+                jsonb
+                NOT
+                NULL,
+                h_antigen1
+                jsonb
+                NOT
+                NULL,
+                h_antigen2
+                jsonb
+                NOT
+                NULL
+            );`, (err, res) => {
     if (err) throw err;
-
 
     pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
         if (err) throw err;
@@ -36,7 +54,8 @@ pool.query(`CREATE TABLE if not exists salmonel (
         console.log('SELECT count(*) as count FROM salmonel: ', res.rows)
 
         if (res.rows[0].count == '0') {
-            const sql = `INSERT INTO salmonel (allgroups,serovar,o_antigen,h_antigen1,h_antigen2) VALUES ($1,$2,$3,$4,$5);`;
+            const sql = `INSERT INTO salmonel (allgroups, serovar, o_antigen, h_antigen1, h_antigen2)
+                         VALUES ($1, $2, $3, $4, $5);`;
             const insertRow = (data, row, index) => {
                 console.log('insertRow  ', row);
                 pool.query(sql, [
@@ -78,105 +97,65 @@ app.get("/test", (request, response) => {
     });
 })
 
-app.get("/salmonel", (request, response) => {
-    const serovar = `%${request.query.filter}%`;
-    console.log('Serovar ',serovar);
-    pool.query(`select * from salmonel WHERE serovar LIKE $1 limit 10;`,[serovar],(err, res) => {
-        if (err) throw err;
-        console.log(JSON.stringify(res.rows))
-        response.send(JSON.stringify(res.rows))
-    });
-})
+// app.get("/salmonel", (request, response) => {
+//     const serovar = `%${request.query.filter}%`;
+//     console.log('Serovar ', serovar);
+//     pool.query(`select *
+//                 from salmonel
+//                 WHERE serovar LIKE $1 limit 10;`, [serovar], (err, res) => {
+//         if (err) throw err;
+//         console.log(JSON.stringify(res.rows))
+//         response.send(JSON.stringify(res.rows))
+//     });
+// })
 app.get("/filter", (request, response) => {
     const filter = JSON.parse(request.query.filter);
-    // console.log(filter,filter.find.OAntigen[0]);
-    // find:{
-    //     OAntigen:['15!'],
-    //         H1Antigen:[],
-    //         H2Antigen:[],
-    // },
-    // exclude:{
-    //     OAntigen:[],
-    //         H1Antigen:[],
-    //         H2Antigen:[],
-    // }
-
     let sql = 'SELECT * FROM salmonel WHERE 1=1 '
-    let args= [];
-    const doSqlAndArgs = (antigen,it) => {
+    let args = [];
+    const doSqlAndArgs = (antigen, it) => {
         args.push(it)
-        sql+= ` and ((${antigen} ? \$${args.length})`
-        args.push('%,'+it+',%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%('+it+',%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%,'+it+')%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%('+it+')%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%{'+it+',%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%,'+it+'}%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%{'+it+'}%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%['+it+',%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%,'+it+']%')
-        sql+= ` or (${antigen}::text like \$${args.length})`
-        args.push('%['+it+']%')
-        sql+= ` or (${antigen}::text like \$${args.length}))`
+        sql += ` and ((${antigen} ? \$${args.length})`
+        args.push('%,' + it + ',%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%(' + it + ',%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%,' + it + ')%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%(' + it + ')%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%{' + it + ',%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%,' + it + '}%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%{' + it + '}%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%[' + it + ',%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%,' + it + ']%')
+        sql += ` or (${antigen}::text like \$${args.length})`
+        args.push('%[' + it + ']%')
+        sql += ` or (${antigen}::text like \$${args.length}))`
     }
-    filter.find.OAntigen.forEach(it=>{
-        doSqlAndArgs('o_antigen',it);
-        // args.push('%'+'"'+it+'"'+'%')
-        // sql+= ` and ((o_antigen ? \$${args.length})`
-        // args.push('['+it+']')
-        // sql+= ` or (o_antigen ? \$${args.length}))`
+    filter.find.OAntigen.forEach(it => {
+        doSqlAndArgs('o_antigen', it);
     })
-    filter.find.H1Antigen.forEach(it=>{
-        doSqlAndArgs('h_antigen1',it);
-        // args.push('%'+'"'+it+'"'+'%')
-        // sql+= ` and ((h_antigen1 ? \$${args.length})`
-        // args.push('['+it+']')
-        // sql+= ` or (h_antigen1 ? \$${args.length}))`
+    filter.find.H1Antigen.forEach(it => {
+        doSqlAndArgs('h_antigen1', it);
     })
-    filter.find.H2Antigen.forEach(it=>{
-        doSqlAndArgs('h_antigen2',it);
-        // args.push(it)
-        // sql+= ` and ((h_antigen2 ? \$${args.length})`
-        // args.push('%,'+it+',%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%('+it+',%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%,'+it+')%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%('+it+')%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%{'+it+',%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%,'+it+'}%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%{'+it+'}%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%['+it+',%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%,'+it+']%')
-        // sql+= ` or (h_antigen2::text like \$${args.length})`
-        // args.push('%['+it+']%')
-        // sql+= ` or (h_antigen2::text like \$${args.length}))`
+    filter.find.H2Antigen.forEach(it => {
+        doSqlAndArgs('h_antigen2', it);
     })
-    filter.exclude.OAntigen.forEach(it=>{
+    filter.exclude.OAntigen.forEach(it => {
         args.push(it)
-        sql+= ` and not (o_antigen ? \$${args.length})`
+        sql += ` and not (o_antigen ? \$${args.length})`
     })
-    filter.exclude.H1Antigen.forEach(it=>{
+    filter.exclude.H1Antigen.forEach(it => {
         args.push(it)
-        sql+= ` and not (h_antigen1 ? \$${args.length})`
+        sql += ` and not (h_antigen1 ? \$${args.length})`
     })
-    filter.exclude.H2Antigen.forEach(it=>{
+    filter.exclude.H2Antigen.forEach(it => {
         args.push(it)
-        sql+= ` and not (h_antigen2 ? \$${args.length})`
+        sql += ` and not (h_antigen2 ? \$${args.length})`
     })
     console.log(sql, args)
     pool.query(sql, args, (err, res) => {
