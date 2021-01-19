@@ -62,8 +62,6 @@ pool.query(`CREATE TABLE if not exists salmonel (
     });
 });
 
-
-
 // app.use(logger('dev'));
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: false }));
@@ -105,45 +103,68 @@ app.get("/filter", (request, response) => {
 
     let sql = 'SELECT * FROM salmonel WHERE 1=1 '
     let args= [];
+    const doSqlAndArgs = (antigen,it) => {
+        args.push(it)
+        sql+= ` and ((${antigen} ? \$${args.length})`
+        args.push('%,'+it+',%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%('+it+',%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%,'+it+')%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%('+it+')%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%{'+it+',%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%,'+it+'}%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%{'+it+'}%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%['+it+',%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%,'+it+']%')
+        sql+= ` or (${antigen}::text like \$${args.length})`
+        args.push('%['+it+']%')
+        sql+= ` or (${antigen}::text like \$${args.length}))`
+    }
     filter.find.OAntigen.forEach(it=>{
-        args.push('%'+'"'+it+'"'+'%')
-        sql+= ` and ((o_antigen ? \$${args.length})`
-        args.push('['+it+']')
-        sql+= ` or (o_antigen ? \$${args.length}))`
+        doSqlAndArgs('o_antigen',it);
+        // args.push('%'+'"'+it+'"'+'%')
+        // sql+= ` and ((o_antigen ? \$${args.length})`
+        // args.push('['+it+']')
+        // sql+= ` or (o_antigen ? \$${args.length}))`
     })
     filter.find.H1Antigen.forEach(it=>{
-        args.push('%'+'"'+it+'"'+'%')
-        sql+= ` and ((h_antigen1 ? \$${args.length})`
-        args.push('['+it+']')
-        sql+= ` or (h_antigen1 ? \$${args.length}))`
+        doSqlAndArgs('h_antigen1',it);
+        // args.push('%'+'"'+it+'"'+'%')
+        // sql+= ` and ((h_antigen1 ? \$${args.length})`
+        // args.push('['+it+']')
+        // sql+= ` or (h_antigen1 ? \$${args.length}))`
     })
     filter.find.H2Antigen.forEach(it=>{
-        // args.push('%'+'"'+it+'"'+'%')
-        // sql+= ` and ((h_antigen2::text like \$${args.length})`
-        // args.push('['+it+']')
-        // sql+= ` or (h_antigen2 ? \$${args.length}))`
-        args.push(it)
-        sql+= ` and ((h_antigen2 ? \$${args.length})`
-        args.push('%,'+it+',%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%('+it+',%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%,'+it+')%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%('+it+')%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%{'+it+',%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%,'+it+'}%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%{'+it+'}%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%['+it+',%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%,'+it+']%')
-        sql+= ` or (h_antigen2::text like \$${args.length})`
-        args.push('%['+it+']%')
-        sql+= ` or (h_antigen2::text like \$${args.length}))`
+        doSqlAndArgs('h_antigen2',it);
+        // args.push(it)
+        // sql+= ` and ((h_antigen2 ? \$${args.length})`
+        // args.push('%,'+it+',%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%('+it+',%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%,'+it+')%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%('+it+')%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%{'+it+',%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%,'+it+'}%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%{'+it+'}%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%['+it+',%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%,'+it+']%')
+        // sql+= ` or (h_antigen2::text like \$${args.length})`
+        // args.push('%['+it+']%')
+        // sql+= ` or (h_antigen2::text like \$${args.length}))`
     })
     filter.exclude.OAntigen.forEach(it=>{
         args.push(it)
