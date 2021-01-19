@@ -119,9 +119,9 @@ app.get("/filter", (request, response) => {
     })
     filter.find.H2Antigen.forEach(it=>{
         args.push('%'+'"'+it+'"'+'%')
-        sql+= ` and ((h_antigen2 ? \$${args.length})`
-        args.push('['+it+']')
-        sql+= ` or (h_antigen2 ? \$${args.length}))`
+        sql+= ` and (h_antigen2 ? \$${args.length})`
+        // args.push('['+it+']')
+        // sql+= ` or (h_antigen2 ? \$${args.length}))`
     })
     filter.exclude.OAntigen.forEach(it=>{
         args.push(it)
