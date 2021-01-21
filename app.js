@@ -157,7 +157,7 @@ app.get("/filter", (request, response) => {
         args.push(it)
         sql += ` and not (h_antigen2 ? \$${args.length})`
     })
-    console.log(sql, args)
+    console.log(sql, args,'kkk')
     pool.query(sql, args, (err, res) => {
         if (err) throw err;
         console.log(JSON.stringify(res.rows))
