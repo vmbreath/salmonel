@@ -70,7 +70,7 @@ pool.query(`CREATE TABLE if not exists user_account (
                 name varchar ( 256 ),
                 login varchar ( 256 ),
                 password char( 64 ),
-                salt char ( 64 ),
+                salt char ( 64 )
     );`, (err, res) => {
     if (err) throw err;
 
