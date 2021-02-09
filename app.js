@@ -65,7 +65,7 @@ pool.query(`CREATE TABLE if not exists salmonel (
 });
 
 // language=SQL format=false
-pool.query(`CREATE TABLE if not exists user (
+pool.query(`CREATE TABLE if not exists user_account (
                 id serial primarykey,
                 name varchar ( 256 ),
                 login varchar ( 256 ),
@@ -74,13 +74,13 @@ pool.query(`CREATE TABLE if not exists user (
     );`, (err, res) => {
     if (err) throw err;
 
-    pool.query('SELECT count(*) as count FROM user;', (err, res) => {
+    pool.query('SELECT count(*) as count FROM user_account;', (err, res) => {
         if (err) throw err;
 
-        console.log('SELECT count(*) as count FROM user: ', res.rows)
+        console.log('SELECT count(*) as count FROM user_account: ', res.rows)
 
         if (res.rows[0].count == '0') {
-            const sql = `INSERT INTO user (name, login, password, salt)
+            const sql = `INSERT INTO user_account (name, login, password, salt)
                          VALUES ($1, $2, $3, $4);`;
             const salt = crypto.createHash('sha256').update(new Date().getTime() + '').digest('hex');
             pool.query(sql, [
