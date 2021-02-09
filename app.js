@@ -121,6 +121,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 
+app.options('*', cors(corsOptions));
+
 app.get("/test", (request, response) => {
     pool.query('SELECT * FROM salmonel;', (err, res) => {
         if (err) throw err;
