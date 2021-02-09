@@ -166,7 +166,7 @@ app.post("/login", (request, response) => {
             return
         }
 
-        const user = rows[0];
+        const user = res.rows[0];
         if (user.password !== crypto.createHash('sha256').update(password).update(user.salt).digest('hex')) {
             response.sendStatus(403)
             return
