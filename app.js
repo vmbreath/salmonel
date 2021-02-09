@@ -114,17 +114,63 @@ app.get("/test", (request, response) => {
     });
 })
 
-// app.get("/salmonel", (request, response) => {
-//     const serovar = `%${request.query.filter}%`;
-//     console.log('Serovar ', serovar);
-//     pool.query(`select *
-//                 from salmonel
-//                 WHERE serovar LIKE $1 limit 10;`, [serovar], (err, res) => {
-//         if (err) throw err;
-//         console.log(JSON.stringify(res.rows))
-//         response.send(JSON.stringify(res.rows))
-//     });
-// })
+const createToken = (user) => {
+    const data = user.login;
+    const sign = crypto.createHash('sha256').update(data).update(user.password).digest('hex');
+    return `${data}|${sign}`;
+};
+const validateToken = async (token) => {
+    if (!token) return null;
+    let parts = token.split('|');
+    const data = parts[0];
+    const sign = parts[1];
+    const res = await pool.query('select * from user_account WHERE login = $1', [data]);
+
+    console.log(JSON.stringify(res.rows))
+    if (res.rows.length === 0) {
+        return null
+    }
+
+    const user = rows[0];
+    if (sign !== crypto.createHash('sha256').update(data).update(user.password).digest('hex')) {
+        return null
+    }
+
+    return user
+};
+
+app.get("/login", (request, response) => {
+    const userName = request.userName;
+    const password = request.password;
+    pool.query('select * from user_account WHERE login = $1', [userName], (err, res) => {
+        if (err) throw err;
+        console.log(JSON.stringify(res.rows))
+        if (res.rows.length === 0) {
+            response.sendStatus(404)
+            return
+        }
+
+        const user = rows[0];
+        if (user.password !== crypto.createHash('sha256').update(password).update(user.salt).digest('hex')) {
+            response.sendStatus(403)
+            return
+        }
+
+        response.send(JSON.stringify({token: createToken(user)}))
+    });
+})
+
+app.get("/test/admin", async (request, response) => {
+    const token = request.headers.token;
+    const user = await validateToken(token)
+    if (!user) {
+        response.sendStatus(403)
+        return
+    }
+
+    response.send(JSON.stringify({data: 'ololo'}))
+})
+
 app.get("/filter", (request, response) => {
     const filter = JSON.parse(request.query.filter);
     let sql = 'SELECT * FROM salmonel WHERE 1=1 '
