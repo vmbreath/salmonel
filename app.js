@@ -66,7 +66,7 @@ pool.query(`CREATE TABLE if not exists salmonel (
 
 // language=SQL format=false
 pool.query(`CREATE TABLE if not exists user_account (
-                id serial primarykey,
+                id serial primary key,
                 name varchar ( 256 ),
                 login varchar ( 256 ),
                 password char( 64 ),
