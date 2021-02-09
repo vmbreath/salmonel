@@ -102,6 +102,8 @@ pool.query(`CREATE TABLE if not exists user_account (
 // app.use(express.json());
 // app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser());
+
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // app.use('/', indexRouter);
@@ -139,9 +141,9 @@ const validateToken = async (token) => {
     return user
 };
 
-app.get("/login", (request, response) => {
-    const userName = request.userName;
-    const password = request.password;
+app.post("/login", (request, response) => {
+    const userName = request.body.userName;
+    const password = request.body.password;
     pool.query('select * from user_account WHERE login = $1', [userName], (err, res) => {
         if (err) throw err;
         console.log(JSON.stringify(res.rows))
