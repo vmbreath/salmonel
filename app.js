@@ -10,8 +10,20 @@ const logger = require('morgan');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
-let app = express();
-app.use(cors());
+
+const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
+
+const app = express();
+app.use(cors(corsOptions));
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
