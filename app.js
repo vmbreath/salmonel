@@ -3,13 +3,14 @@ const fs = require('fs');
 const path = require('path');
 const {Pool} = require('pg');
 var cors = require('cors');
+const crypto = require('crypto');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
-var app = express();
+let app = express();
 app.use(cors());
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
@@ -19,32 +20,14 @@ const pool = new Pool({
 });
 
 
-pool.query(`CREATE TABLE if not exists salmonel
-            (
-                id
-                serial
-                primary
-                key,
-                allgroups
-                TEXT
-                NOT
-                NULL,
-                serovar
-                TEXT
-                NOT
-                NULL,
-                o_antigen
-                jsonb
-                NOT
-                NULL,
-                h_antigen1
-                jsonb
-                NOT
-                NULL,
-                h_antigen2
-                jsonb
-                NOT
-                NULL
+// language=SQL format=false
+pool.query(`CREATE TABLE if not exists salmonel (
+                id serial primary key,
+                allgroups TEXT NOT NULL,
+                serovar TEXT NOT NULL,
+                o_antigen jsonb NOT NULL,
+                h_antigen1 jsonb NOT NULL,
+                h_antigen2 jsonb NOT NULL
             );`, (err, res) => {
     if (err) throw err;
 
@@ -80,6 +63,40 @@ pool.query(`CREATE TABLE if not exists salmonel
         }
     });
 });
+
+// language=SQL format=false
+pool.query(`CREATE TABLE if not exists user (
+                id serial primarykey,
+                name varchar ( 256 ),
+                login varchar ( 256 ),
+                password char( 64 ),
+                salt char ( 64 ),
+    );`, (err, res) => {
+    if (err) throw err;
+
+    pool.query('SELECT count(*) as count FROM user;', (err, res) => {
+        if (err) throw err;
+
+        console.log('SELECT count(*) as count FROM user: ', res.rows)
+
+        if (res.rows[0].count == '0') {
+            const sql = `INSERT INTO user (name, login, password, salt)
+                         VALUES ($1, $2, $3, $4);`;
+            const salt = crypto.createHash('sha256').update(new Date().getTime() + '').digest('hex');
+            pool.query(sql, [
+                'Admin',
+                'admin',
+                crypto.createHash('sha256').update('qwerty').update(salt).digest('hex'),
+                salt,
+            ], (err, res) => {
+                if (err) {
+                    return console.log(err.message);
+                }
+            })
+        }
+    })
+})
+
 
 // app.use(logger('dev'));
 // app.use(express.json());
@@ -157,7 +174,7 @@ app.get("/filter", (request, response) => {
         args.push(it)
         sql += ` and not (h_antigen2 ? \$${args.length})`
     })
-    console.log(sql, args,'kkk')
+    console.log(sql, args, 'kkk')
     pool.query(sql, args, (err, res) => {
         if (err) throw err;
         console.log(JSON.stringify(res.rows))
