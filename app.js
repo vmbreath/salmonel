@@ -167,6 +167,7 @@ app.post("/login", (request, response) => {
         }
 
         const user = res.rows[0];
+
         if (user.password !== crypto.createHash('sha256').update(password).update(user.salt).digest('hex')) {
             response.sendStatus(403)
             return
@@ -176,7 +177,7 @@ app.post("/login", (request, response) => {
     });
 })
 
-app.get("/test/admin", async (request, response) => {
+app.get("/verify/admin", async (request, response) => {
     const token = request.headers.token;
     const user = await validateToken(token)
     if (!user) {
