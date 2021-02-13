@@ -147,7 +147,7 @@ const validateToken = async (token) => {
         return null
     }
 
-    const user = rows[0];
+    const user = res.rows[0];
     if (sign !== crypto.createHash('sha256').update(data).update(user.password).digest('hex')) {
         return null
     }
