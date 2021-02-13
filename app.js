@@ -177,7 +177,7 @@ app.post("/login", (request, response) => {
     });
 })
 
-app.get("/verify/admin", async (request, response) => {
+app.get("/verifier", async (request, response) => {
     console.log('admin', request)
     const token = request.headers.token;
     const user = await validateToken(token)
