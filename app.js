@@ -11,7 +11,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 
-const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
+const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/', 'https://salmonel-heroku.herokuapp.com/verifier']
 const corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
