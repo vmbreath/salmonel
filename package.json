@@ -14,5 +14,6 @@
     "cors": "^2.8.5"
   },
   "devDependencies": {
-  }
+  },
+  "type": "module"
 }
