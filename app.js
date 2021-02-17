@@ -79,7 +79,6 @@ pool.query(`CREATE TABLE if not exists salmonel (
 
 tableAuth.createTableAuthorization(fs,pool);
 
-// // language=SQL format=false
 // pool.query(`CREATE TABLE if not exists user_account (
 //                 id serial primary key,
 //                 name varchar ( 256 ),
