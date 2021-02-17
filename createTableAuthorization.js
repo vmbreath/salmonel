@@ -1,4 +1,13 @@
-exports.createTableAuthorization = (fs,pool,crypto) => {
+const path = require('path');
+const {Pool} = require('pg');
+const crypto = require('crypto');
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+exports.createTableAuthorization = () => {
     // language=SQL format=false
     pool.query(`CREATE TABLE if not exists user_account (
                 id serial primary key,
