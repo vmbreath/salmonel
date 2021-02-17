@@ -9,7 +9,7 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-import {createTableAuthorization} from "./createTableAuthorization";
+const tableAuth = require('./createTableAuthorization')
 
 
 // const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/', 'http://localhost:3000/#/admin']
@@ -77,7 +77,7 @@ pool.query(`CREATE TABLE if not exists salmonel (
     });
 });
 
-createTableAuthorization(fs,pool);
+tableAuth.createTableAuthorization(fs,pool);
 
 // // language=SQL format=false
 // pool.query(`CREATE TABLE if not exists user_account (
