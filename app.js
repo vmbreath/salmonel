@@ -77,7 +77,7 @@ pool.query(`CREATE TABLE if not exists salmonel (
     });
 });
 
-tableAuth.createTableAuthorization(fs,pool);
+tableAuth.createTableAuthorization(fs,pool,crypto);
 
 // pool.query(`CREATE TABLE if not exists user_account (
 //                 id serial primary key,

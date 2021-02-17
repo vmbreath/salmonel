@@ -1,4 +1,4 @@
-exports.createTableAuthorization = (fs,pool) => {
+exports.createTableAuthorization = (fs,pool,crypto) => {
     // language=SQL format=false
     pool.query(`CREATE TABLE if not exists user_account (
                 id serial primary key,
