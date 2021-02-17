@@ -12,16 +12,16 @@ const usersRouter = require('./routes/users');
 const tableAuth = require('./createTableAuthorization')
 
 
-// const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/', 'http://localhost:3000/#/admin']
-// const corsOptions = {
-//     origin: function (origin, callback) {
-//         if (whitelist.indexOf(origin) !== -1) {
-//             callback(null, true)
-//         } else {
-//             callback(new Error('Not allowed by CORS'))
-//         }
-//     }
-// }
+const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error('Not allowed by CORS'))
+        }
+    }
+}
 
 const app = express();
 app.use(cors());
