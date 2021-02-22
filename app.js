@@ -1,5 +1,4 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const {Pool} = require('pg');
 const cors = require('cors');
@@ -9,8 +8,8 @@ const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
-const tableAuth = require('./createTableAuthorization')
-
+const tableAuth = require('./createTables/createTableAuthorization');
+const tableSalmonel = require('./createTables/createTableSalmonel');
 
 const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
 const corsOptions = {
@@ -34,50 +33,51 @@ const pool = new Pool({
 
 
 // language=SQL format=false
-pool.query(`CREATE TABLE if not exists salmonel (
-                id serial primary key,
-                allgroups TEXT NOT NULL,
-                serovar TEXT NOT NULL,
-                o_antigen jsonb NOT NULL,
-                h_antigen1 jsonb NOT NULL,
-                h_antigen2 jsonb NOT NULL
-            );`, (err, res) => {
-    if (err) throw err;
-
-    pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
-        if (err) throw err;
-
-        console.log('SELECT count(*) as count FROM salmonel: ', res.rows)
-
-        if (res.rows[0].count == '0') {
-            const sql = `INSERT INTO salmonel (allgroups, serovar, o_antigen, h_antigen1, h_antigen2)
-                         VALUES ($1, $2, $3, $4, $5);`;
-            const insertRow = (data, row, index) => {
-                console.log('insertRow  ', row);
-                pool.query(sql, [
-                    row[0],
-                    row[1],
-                    JSON.stringify(row[2]),
-                    JSON.stringify(row[3]),
-                    JSON.stringify(row[4]),
-                ], (err, res) => {
-                    if (err) {
-                        return console.log(err.message);
-                    }
-                    if (data[index + 1] !== undefined) {
-                        insertRow(data, data[index + 1], index + 1);
-                    }
-                })
-            };
-            let rawdata = fs.readFileSync('Data.js');
-            let Data = JSON.parse(rawdata);
-            insertRow(Data, Data[0], 0);
-
-        }
-    });
-});
+// pool.query(`CREATE TABLE if not exists salmonel (
+//                 id serial primary key,
+//                 allgroups TEXT NOT NULL,
+//                 serovar TEXT NOT NULL,
+//                 o_antigen jsonb NOT NULL,
+//                 h_antigen1 jsonb NOT NULL,
+//                 h_antigen2 jsonb NOT NULL
+//             );`, (err, res) => {
+//     if (err) throw err;
+//
+//     pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
+//         if (err) throw err;
+//
+//         console.log('SELECT count(*) as count FROM salmonel: ', res.rows)
+//
+//         if (res.rows[0].count == '0') {
+//             const sql = `INSERT INTO salmonel (allgroups, serovar, o_antigen, h_antigen1, h_antigen2)
+//                          VALUES ($1, $2, $3, $4, $5);`;
+//             const insertRow = (data, row, index) => {
+//                 console.log('insertRow  ', row);
+//                 pool.query(sql, [
+//                     row[0],
+//                     row[1],
+//                     JSON.stringify(row[2]),
+//                     JSON.stringify(row[3]),
+//                     JSON.stringify(row[4]),
+//                 ], (err, res) => {
+//                     if (err) {
+//                         return console.log(err.message);
+//                     }
+//                     if (data[index + 1] !== undefined) {
+//                         insertRow(data, data[index + 1], index + 1);
+//                     }
+//                 })
+//             };
+//             let rawdata = fs.readFileSync('Data.js');
+//             let Data = JSON.parse(rawdata);
+//             insertRow(Data, Data[0], 0);
+//
+//         }
+//     });
+// });
 
 tableAuth.createTableAuthorization();
+tableSalmonel.createTableSalmonel();
 
 // pool.query(`CREATE TABLE if not exists user_account (
 //                 id serial primary key,
