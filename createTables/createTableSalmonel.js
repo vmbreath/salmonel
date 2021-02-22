@@ -42,7 +42,7 @@ exports.createTableSalmonel = () => {
                         }
                     })
                 };
-                let rawdata = fs.readFileSync('../Data.js');
+                let rawdata = fs.readFileSync('Data.js');
                 let Data = JSON.parse(rawdata);
                 insertRow(Data, Data[0], 0);
             }
