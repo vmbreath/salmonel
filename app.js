@@ -3,6 +3,8 @@ const path = require('path');
 const {Pool} = require('pg');
 const cors = require('cors');
 const crypto = require('crypto');
+const multer  = require('multer');
+const upload = multer({ dest: 'uploads/' });
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
@@ -31,86 +33,8 @@ const pool = new Pool({
     }
 });
 
-
-// language=SQL format=false
-// pool.query(`CREATE TABLE if not exists salmonel (
-//                 id serial primary key,
-//                 allgroups TEXT NOT NULL,
-//                 serovar TEXT NOT NULL,
-//                 o_antigen jsonb NOT NULL,
-//                 h_antigen1 jsonb NOT NULL,
-//                 h_antigen2 jsonb NOT NULL
-//             );`, (err, res) => {
-//     if (err) throw err;
-//
-//     pool.query('SELECT count(*) as count FROM salmonel;', (err, res) => {
-//         if (err) throw err;
-//
-//         console.log('SELECT count(*) as count FROM salmonel: ', res.rows)
-//
-//         if (res.rows[0].count == '0') {
-//             const sql = `INSERT INTO salmonel (allgroups, serovar, o_antigen, h_antigen1, h_antigen2)
-//                          VALUES ($1, $2, $3, $4, $5);`;
-//             const insertRow = (data, row, index) => {
-//                 console.log('insertRow  ', row);
-//                 pool.query(sql, [
-//                     row[0],
-//                     row[1],
-//                     JSON.stringify(row[2]),
-//                     JSON.stringify(row[3]),
-//                     JSON.stringify(row[4]),
-//                 ], (err, res) => {
-//                     if (err) {
-//                         return console.log(err.message);
-//                     }
-//                     if (data[index + 1] !== undefined) {
-//                         insertRow(data, data[index + 1], index + 1);
-//                     }
-//                 })
-//             };
-//             let rawdata = fs.readFileSync('Data.js');
-//             let Data = JSON.parse(rawdata);
-//             insertRow(Data, Data[0], 0);
-//
-//         }
-//     });
-// });
-
 tableAuth.createTableAuthorization();
 tableSalmonel.createTableSalmonel();
-
-// pool.query(`CREATE TABLE if not exists user_account (
-//                 id serial primary key,
-//                 name varchar ( 256 ),
-//                 login varchar ( 256 ),
-//                 password char( 64 ),
-//                 salt char ( 64 )
-//     );`, (err, res) => {
-//     if (err) throw err;
-//
-//     pool.query('SELECT count(*) as count FROM user_account;', (err, res) => {
-//         if (err) throw err;
-//
-//         console.log('SELECT count(*) as count FROM user_account: ', res.rows)
-//
-//         if (res.rows[0].count == '0') {
-//             const sql = `INSERT INTO user_account (name, login, password, salt)
-//                          VALUES ($1, $2, $3, $4);`;
-//             const salt = crypto.createHash('sha256').update(new Date().getTime() + '').digest('hex');
-//             pool.query(sql, [
-//                 'Admin',
-//                 'admin',
-//                 crypto.createHash('sha256').update('qwerty').update(salt).digest('hex'),
-//                 salt,
-//             ], (err, res) => {
-//                 if (err) {
-//                     return console.log(err.message);
-//                 }
-//             })
-//         }
-//     })
-// })
-
 
 // app.use(logger('dev'));
 // app.use(express.json());
@@ -191,6 +115,18 @@ app.post("/verifier", async (request, response) => {
     response.send(JSON.stringify({data: 'ololo'}))
 })
 
+app.post("/uploadtable", upload.single('table'),async (request, response) => {
+    console.log('table', request.file)
+    // const token = request.headers.token;
+    // const user = await validateToken(token)
+    // if (!user) {
+    //     response.sendStatus(403)
+    //     return
+    // }
+
+    response.send('file loaded')
+})
+
 app.get("/filter", (request, response) => {
     const filter = JSON.parse(request.query.filter);
     let sql = 'SELECT * FROM salmonel WHERE 1=1 '
@@ -240,7 +176,6 @@ app.get("/filter", (request, response) => {
         args.push(it)
         sql += ` and not (h_antigen2 ? \$${args.length})`
     })
-    console.log(sql, args, 'kkk')
     pool.query(sql, args, (err, res) => {
         if (err) throw err;
         console.log(JSON.stringify(res.rows))
