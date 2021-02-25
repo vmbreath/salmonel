@@ -115,7 +115,7 @@ app.post("/verifier", async (request, response) => {
     response.send(JSON.stringify({data: 'ololo'}))
 })
 
-app.post("/uploadtable", upload.single('table.csv'),async (request, response) => {
+app.post("/uploadtable", upload.single('table'),async (request, response) => {
     console.log('table', request.file)
     // const token = request.headers.token;
     // const user = await validateToken(token)
