@@ -23,7 +23,7 @@ const split = s => {
 }
 exports.processLineByLine = async (path) => {
 //async function processLineByLine() {
-    const fileStream = fs.createReadStream('таблица.csv');
+    const fileStream = fs.createReadStream(path);//'таблица.csv');
     const rl = readline.createInterface({
         input: fileStream,
         crlfDelay: Infinity
