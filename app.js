@@ -12,6 +12,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const tableAuth = require('./createTables/createTableAuthorization');
 const tableSalmonel = require('./createTables/createTableSalmonel');
+const dataParser = require('./dataParser');
 
 const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
 const corsOptions = {
@@ -116,7 +117,8 @@ app.post("/verifier", async (request, response) => {
 })
 
 app.post("/uploadtable", upload.single('table'), (request, response) => {
-    console.log('table', request, 'FILE', request.file)
+    console.log('table', request, 'FILE', request.file);
+    dataParser.processLineByLine(request.file.path);
     // const token = request.headers.token;
     // const user = await validateToken(token)
     // if (!user) {
