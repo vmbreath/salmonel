@@ -4,7 +4,7 @@ const {Pool} = require('pg');
 const cors = require('cors');
 const crypto = require('crypto');
 const multer  = require('multer');
-const upload = multer({ dest: '/uploads' });
+const upload = multer({ dest: 'uploads/' });
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
