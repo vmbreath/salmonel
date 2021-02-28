@@ -116,7 +116,7 @@ app.post("/verifier", async (request, response) => {
 })
 
 app.post("/uploadtable", upload.single('table'),async (request, response) => {
-    console.log('table', request)
+    console.log('table', request, request.file)
     // const token = request.headers.token;
     // const user = await validateToken(token)
     // if (!user) {
