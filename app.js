@@ -170,9 +170,9 @@ app.get("/files/:id/data", async (req, res) => {
 
     let file = files.rows[0];
     if (file.compress_type && file.compress_type === 'gz') {
-        res.headers['Content-Encoding'] = 'gzip'
+        res.setHeader('Content-Encoding', 'gzip')
     }
-    res.headers['Content-Disposition'] = `attachment; filename="${encodeURIComponent(file.name)}"`;
+    res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(file.name)}"`);
 
     res.send(file.data)
 })
