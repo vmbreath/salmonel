@@ -1,3 +1,5 @@
+import {gzip} from "./zipUtils";
+
 const express = require('express');
 const path = require('path');
 const {Pool} = require('pg');
@@ -14,6 +16,7 @@ const tableAuth = require('./createTables/createTableAuthorization');
 const tableSalmonel = require('./createTables/createTableSalmonel');
 const tableFiles = require('./createTables/createTableFiles');
 const dataParser = require('./dataParser');
+
 
 const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
 const corsOptions = {
@@ -118,15 +121,19 @@ app.post("/verifier", async (request, response) => {
     response.send(JSON.stringify({data: 'ololo'}))
 })
 
-app.post("/uploadtable", upload.single('table'), (request, response) => {
+app.post("/uploadtable", upload.single('table'), async (request, response) => {
     console.log('table', request, 'FILE', request.file);
-    dataParser.processLineByLine(request.file.path);
-    // const token = request.headers.token;
-    // const user = await validateToken(token)
-    // if (!user) {
-    //     response.sendStatus(403)
-    //     return
-    // }
+    await dataParser.processLineByLine(request.file.path);
+
+    const gz = await gzip(request.file);
+    const sql = `INSERT INTO files (name, date, compress_type, data)
+                 VALUES ($1, $2, $3, $4);`;
+    await pool.query(sql, [
+        request.file.name,
+        new Date(),
+        'gz',
+        gz,
+    ])
 
     response.send('file loaded')
 })

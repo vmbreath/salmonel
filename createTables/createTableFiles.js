@@ -1,11 +1,3 @@
-const {Pool} = require('pg');
-const crypto = require('crypto');
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
 exports.createTableFiles = (pool) => {
     pool.query(`CREATE TABLE if not exists files (
                 id serial primary key,

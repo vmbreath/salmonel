@@ -1,11 +1,4 @@
-const {Pool} = require('pg');
 const fs = require('fs');
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: {
-        rejectUnauthorized: false
-    }
-});
 exports.createTableSalmonel = (pool) => {
     pool.query(`CREATE TABLE if not exists salmonel (
                 id serial primary key,
