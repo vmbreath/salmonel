@@ -4,8 +4,8 @@ const path = require('path');
 const {Pool} = require('pg');
 const cors = require('cors');
 const crypto = require('crypto');
-const multer  = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const multer = require('multer');
+const upload = multer({dest: 'uploads/'});
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
@@ -143,7 +143,7 @@ app.post("/uploadtable", upload.single('table'), async (request, response) => {
     response.send('file loaded')
 })
 
-app.get("/files", async (req, res)=>{
+app.get("/files", async (req, res) => {
     const token = req.headers.token || req.cookies.token;
     const user = await validateToken(token)
     if (!user) {
@@ -151,10 +151,10 @@ app.get("/files", async (req, res)=>{
         return
     }
     const files = await pool.query('select id, name, date, compress_type from files')
-    res.send(files)
+    res.send(files.rows)
 })
 
-app.get("/files/:id/data", async (req, res)=>{
+app.get("/files/:id/data", async (req, res) => {
     const token = req.headers.token || req.cookies.token;
     const user = await validateToken(token)
     if (!user) {
@@ -163,16 +163,16 @@ app.get("/files/:id/data", async (req, res)=>{
     }
     const id = req.params.id;
     const files = await pool.query('select name, compress_type, data  from files where id= $1', [id])
-    if(files.length==0){
+    if (files.rows.length === 0) {
         res.sendStatus(404)
         return
     }
 
-    let file = files[0];
-    if(file.compress_type && file.compress_type ==='gz') {
+    let file = files.rows[0];
+    if (file.compress_type && file.compress_type === 'gz') {
         res.headers['Content-Encoding'] = 'gzip'
     }
-    res.headers['Content-Disposition'] =  `attachment; filename="${encodeURIComponent(file.name)}"`;
+    res.headers['Content-Disposition'] = `attachment; filename="${encodeURIComponent(file.name)}"`;
 
     res.send(file.data)
 })
