@@ -31,6 +31,7 @@ const corsOptions = {
 
 const app = express();
 app.use(cors());
+app.use(cookieParser());
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -111,13 +112,17 @@ app.post("/login", (request, response) => {
 
 app.post("/verifier", async (request, response) => {
     console.log('admin', request.headers.token)
-    const token = request.headers.token;
+    const token = request.headers.token || request.cookies.token;
     const user = await validateToken(token)
     if (!user) {
         response.sendStatus(403)
         return
     }
-
+    response.cookie('token', token, {
+        maxAge: 86400 * 1000, // 24 hours
+        httpOnly: true, // http only, prevents JavaScript cookie access
+        secure: true // cookie must be sent over https / ssl
+    });
     response.send(JSON.stringify({data: 'ololo'}))
 })
 
@@ -139,7 +144,7 @@ app.post("/uploadtable", upload.single('table'), async (request, response) => {
 })
 
 app.get("/files", async (req, res)=>{
-    const token = req.headers.token;
+    const token = req.headers.token || req.cookies.token;
     const user = await validateToken(token)
     if (!user) {
         res.sendStatus(403)
@@ -150,7 +155,7 @@ app.get("/files", async (req, res)=>{
 })
 
 app.get("/files/:id/data", async (req, res)=>{
-    const token = req.headers.token;
+    const token = req.headers.token || req.cookies.token;
     const user = await validateToken(token)
     if (!user) {
         res.sendStatus(403)
