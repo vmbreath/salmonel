@@ -15,6 +15,7 @@ const tableAuth = require('./createTables/createTableAuthorization');
 const tableSalmonel = require('./createTables/createTableSalmonel');
 const tableFiles = require('./createTables/createTableFiles');
 const dataParser = require('./dataParser');
+const fs = require("fs");
 
 
 const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
@@ -124,7 +125,7 @@ app.post("/uploadtable", upload.single('table'), async (request, response) => {
     console.log('table', request, 'FILE', request.file);
     await dataParser.processLineByLine(request.file.path);
 
-    const gz = await zipUtils.gzip(request.file);
+    const gz = await zipUtils.gzip(fs.readFileSync(request.file.path));
     const sql = `INSERT INTO files (name, date, compress_type, data)
                  VALUES ($1, $2, $3, $4);`;
     await pool.query(sql, [
