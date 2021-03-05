@@ -12,6 +12,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const tableAuth = require('./createTables/createTableAuthorization');
 const tableSalmonel = require('./createTables/createTableSalmonel');
+const tableFiles = require('./createTables/createTableFiles');
 const dataParser = require('./dataParser');
 
 const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
@@ -34,8 +35,9 @@ const pool = new Pool({
     }
 });
 
-tableAuth.createTableAuthorization();
-tableSalmonel.createTableSalmonel();
+tableAuth.createTableAuthorization(pool);
+tableFiles.createTableFiles(pool);
+tableSalmonel.createTableSalmonel(pool);
 
 // app.use(logger('dev'));
 // app.use(express.json());

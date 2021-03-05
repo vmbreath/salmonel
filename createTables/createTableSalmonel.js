@@ -6,7 +6,7 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
-exports.createTableSalmonel = () => {
+exports.createTableSalmonel = (pool) => {
     pool.query(`CREATE TABLE if not exists salmonel (
                 id serial primary key,
                 allgroups TEXT NOT NULL,

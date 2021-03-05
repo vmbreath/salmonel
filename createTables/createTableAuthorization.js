@@ -6,7 +6,7 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
-exports.createTableAuthorization = () => {
+exports.createTableAuthorization = (pool) => {
     pool.query(`CREATE TABLE if not exists user_account (
                 id serial primary key,
                 name varchar ( 256 ),
