@@ -139,7 +139,7 @@ app.post("/uploadtable", upload.single('table'), async (request, response) => {
 })
 
 app.get("/files", async (req, res)=>{
-    const token = request.headers.token;
+    const token = req.headers.token;
     const user = await validateToken(token)
     if (!user) {
         res.sendStatus(403)
@@ -150,7 +150,7 @@ app.get("/files", async (req, res)=>{
 })
 
 app.get("/files/:id/data", async (req, res)=>{
-    const token = request.headers.token;
+    const token = req.headers.token;
     const user = await validateToken(token)
     if (!user) {
         res.sendStatus(403)
