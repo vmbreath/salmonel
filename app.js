@@ -129,13 +129,47 @@ app.post("/uploadtable", upload.single('table'), async (request, response) => {
     const sql = `INSERT INTO files (name, date, compress_type, data)
                  VALUES ($1, $2, $3, $4);`;
     await pool.query(sql, [
-        request.file.name,
+        request.file.originalname,
         new Date(),
         'gz',
         gz,
     ])
 
     response.send('file loaded')
+})
+
+app.get("/files", async (req, res)=>{
+    const token = request.headers.token;
+    const user = await validateToken(token)
+    if (!user) {
+        res.sendStatus(403)
+        return
+    }
+    const files = await pool.query('select id, name, date, compress_type from files')
+    res.send(files)
+})
+
+app.get("/files/:id/data", async (req, res)=>{
+    const token = request.headers.token;
+    const user = await validateToken(token)
+    if (!user) {
+        res.sendStatus(403)
+        return
+    }
+    const id = req.params.id;
+    const files = await pool.query('select name, compress_type, data  from files where id= $1', [id])
+    if(files.length==0){
+        res.sendStatus(404)
+        return
+    }
+
+    let file = files[0];
+    if(file.compress_type && file.compress_type ==='gz') {
+        res.headers['Content-Encoding'] = 'gzip'
+    }
+    res.headers['Content-Disposition'] =  `attachment; filename="${encodeURIComponent(file.name)}"`;
+
+    res.send(file.data)
 })
 
 app.get("/filter", (request, response) => {
