@@ -1,5 +1,4 @@
-import {gzip} from "./zipUtils";
-
+const {gzip} = require("./zipUtils");
 const express = require('express');
 const path = require('path');
 const {Pool} = require('pg');
