@@ -1,4 +1,4 @@
-const {gzip} = require("./zipUtils");
+const zipUtils = require("./zipUtils");
 const express = require('express');
 const path = require('path');
 const {Pool} = require('pg');
@@ -124,7 +124,7 @@ app.post("/uploadtable", upload.single('table'), async (request, response) => {
     console.log('table', request, 'FILE', request.file);
     await dataParser.processLineByLine(request.file.path);
 
-    const gz = await gzip(request.file);
+    const gz = await zipUtils.gzip(request.file);
     const sql = `INSERT INTO files (name, date, compress_type, data)
                  VALUES ($1, $2, $3, $4);`;
     await pool.query(sql, [
