@@ -18,7 +18,7 @@ const dataParser = require('./dataParser');
 const fs = require("fs");
 
 
-const whitelist = ['http://localhost:3000', 'https://salmonel-heroku.herokuapp.com/']
+const whitelist = ['http://localhost:3000', 'https://salmonel.onrender.com']
 const corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
