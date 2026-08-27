@@ -1,34 +1,41 @@
-const crypto = require('crypto');
+const bcrypt = require('bcrypt');
+
 exports.createTableAuthorization = (pool) => {
     pool.query(`CREATE TABLE if not exists user_account (
                 id serial primary key,
-                name varchar ( 256 ),
-                login varchar ( 256 ),
-                password char( 64 ),
-                salt char ( 64 )
+                name varchar(256),
+                login varchar(256),
+                password varchar(255)
     );`, (err, res) => {
-        if (err) throw err;
+        if (err) {
+            console.error('Error creating user_account table:', err);
+            return;
+        }
 
-        pool.query('SELECT count(*) as count FROM user_account;', (err, res) => {
-            if (err) throw err;
-
-            console.log('SELECT count(*) as count FROM user_account: ', res.rows)
+        pool.query('SELECT count(*) as count FROM user_account;', async (err, res) => {
+            if (err) {
+                console.error('Error counting user_account:', err);
+                return;
+            }
 
             if (res.rows[0].count == '0') {
-                const sql = `INSERT INTO user_account (name, login, password, salt)
-                         VALUES ($1, $2, $3, $4);`;
-                const salt = crypto.createHash('sha256').update(new Date().getTime() + '').digest('hex');
-                pool.query(sql, [
-                    'Admin',
-                    'admin',
-                    crypto.createHash('sha256').update('qwerty').update(salt).digest('hex'),
-                    salt,
-                ], (err, res) => {
-                    if (err) {
-                        return console.log(err.message);
-                    }
-                })
+                const sql = `INSERT INTO user_account (name, login, password) VALUES ($1, $2, $3);`;
+                
+                try {
+                    // Hash default password 'qwerty' with a cost factor of 10
+                    const hashedPassword = await bcrypt.hash('qwerty', 10);
+                    
+                    pool.query(sql, ['Admin', 'admin', hashedPassword], (err, res) => {
+                        if (err) {
+                            console.error('Error inserting default admin:', err.message);
+                        } else {
+                            console.log('Default admin user created.');
+                        }
+                    });
+                } catch (hashErr) {
+                    console.error('Error hashing default password:', hashErr);
+                }
             }
-        })
-    })
-}
+        });
+    });
+};

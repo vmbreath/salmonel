@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 const pool = require('../db');
 const { createToken, validateToken } = require('../authUtils');
 
@@ -17,12 +18,14 @@ router.post("/login", (request, response, next) => {
 
         const user = res.rows[0];
 
-        if (user.password !== crypto.createHash('sha256').update(password).update(user.salt).digest('hex')) {
-            response.sendStatus(403);
-            return;
-        }
-
-        response.json({token: createToken(user)});
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+            if (err) return next(err);
+            if (!isMatch) {
+                response.sendStatus(403);
+                return;
+            }
+            response.json({token: createToken(user)});
+        });
     });
 });
 
