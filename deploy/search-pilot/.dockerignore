@@ -1,0 +1,9 @@
+*
+!Dockerfile
+!app/
+!app/**
+app/node_modules/
+app/**/.env
+app/**/.env.*
+app/**/*.pem
+app/**/*.key

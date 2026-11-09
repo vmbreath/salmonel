@@ -1,0 +1,8 @@
+[Unit]
+Description=Check Salmonel short-lived TLS certificate every six hours
+[Timer]
+OnCalendar=*-*-* 00,06,12,18:25:00
+RandomizedDelaySec=900
+Persistent=true
+[Install]
+WantedBy=timers.target

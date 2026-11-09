@@ -1,0 +1,17 @@
+# Local rollback copies and browser evidence
+/backups/
+/ui-evidence/
+/ui-baseline.mjs
+# Generated from frontend-v2/ by prepare.py
+/app/public/
+# Runtime state and secrets must never be committed
+/letsencrypt/
+/acme-webroot/
+/nginx.active.conf
+.env
+.env.*
+*.pem
+*.key
+node_modules/
+__pycache__/
+*.py[cod]

@@ -1,0 +1,8 @@
+[Unit]
+Description=Renew Salmonel public IP TLS certificate and reload its proxy
+After=docker.service network-online.target
+Requires=docker.service
+[Service]
+Type=oneshot
+ExecStart=/bin/sh /opt/salmonel-pilot/renew-tls.sh
+TimeoutStartSec=300

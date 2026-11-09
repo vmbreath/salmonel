@@ -1,0 +1,47 @@
+name: salmonel-pilot
+services:
+  db:
+    image: postgres:16-bookworm
+    environment:
+      POSTGRES_DB: salmonel
+      POSTGRES_HOST_AUTH_METHOD: trust
+    command: ["postgres", "-c", "listen_addresses=", "-c", "hba_file=/etc/postgresql/pg_hba.public.conf"]
+    network_mode: none
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - db-socket:/var/run/postgresql
+      - ./pg_hba.public.conf:/etc/postgresql/pg_hba.public.conf:ro
+    mem_limit: 256m
+    cpus: 0.30
+    pids_limit: 100
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "salmonel"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+  app:
+    image: ninkear/salmonel-search:frontend-v2
+    ports:
+      - "127.0.0.1:18088:3000"
+    volumes:
+      - db-socket:/var/run/postgresql
+    depends_on:
+      db:
+        condition: service_healthy
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs: ["/tmp:size=16m"]
+    mem_limit: 192m
+    cpus: 0.30
+    pids_limit: 80
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+volumes:
+  db-data:
+  db-socket:
